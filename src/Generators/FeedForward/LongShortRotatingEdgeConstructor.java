@@ -34,11 +34,10 @@ public class LongShortRotatingEdgeConstructor {
         int nextLayerStart = inputNodes + 1;
 
         int range = (nextLayerStart + hiddenLayerSizes.get(0) - 1) - nextLayerStart + 1;
-        System.out.println("range1: " + range);
         List<Integer> indices = generateIndices(range, sparsity);
         // Input Layer to First Hidden Layer
         for (int input = currentLayerStart; input < nextLayerStart; input++) {
-            addEdgesWithRotation(input, nextLayerStart, nextLayerStart + hiddenLayerSizes.get(0) - 1, edges, indices);
+            addEdgesWithRotation(input, nextLayerStart, nextLayerStart + hiddenLayerSizes.get(0) - 1, edges, indices, input-currentLayerStart);
         }
 
 
@@ -48,11 +47,10 @@ public class LongShortRotatingEdgeConstructor {
         // Hidden Layers
         for (int layer = 1; layer < hiddenLayerSizes.size(); layer++) {
             range = (nextLayerStart + hiddenLayerSizes.get(layer) - 1) - nextLayerStart + 1;
-            System.out.println("range2: " + range);
             indices = generateIndices(range, sparsity);
 
             for (int from = currentLayerStart; from < currentLayerStart + hiddenLayerSizes.get(layer - 1); from++) {
-                addEdgesWithRotation(from, nextLayerStart, nextLayerStart + hiddenLayerSizes.get(layer) - 1, edges, indices);
+                addEdgesWithRotation(from, nextLayerStart, nextLayerStart + hiddenLayerSizes.get(layer) - 1, edges, indices, from-currentLayerStart);
             }
 
 
@@ -66,7 +64,7 @@ public class LongShortRotatingEdgeConstructor {
 
         // Last Hidden Layer to Output Layer
         for (int hidden = currentLayerStart; hidden < currentLayerStart + hiddenLayerSizes.get(hiddenLayerSizes.size() - 1); hidden++) {
-            addEdgesWithRotation(hidden, nextLayerStart, nextLayerStart + outputNodes - 1, edges, indices);
+            addEdgesWithRotation(hidden, nextLayerStart, nextLayerStart + outputNodes - 1, edges, indices, hidden - currentLayerStart);
         }
 
 
@@ -80,23 +78,22 @@ public class LongShortRotatingEdgeConstructor {
         }
     }
 
-    private static List<Integer> rotate(List<Integer> originalList) {
-        List<Integer> rotatedList = new ArrayList<>();
-        Random r = new Random();
-        int randomStart = r.nextInt(originalList.size());
-        for (int i = randomStart; i < originalList.size(); i++) { //fill from random starting point
-            rotatedList.add(originalList.get(i));
+    private static List<Integer> rotate(List<Integer> originalList, int rotationIndex) {
+
+        Integer[] indicesArr = new Integer[originalList.size()];
+
+        for (int i = 0; i < originalList.size(); i++) {
+            indicesArr[(i + rotationIndex) % originalList.size()] =  originalList.get(i);
         }
 
-        for (int i = 0; i < randomStart; i++) {
-            rotatedList.add(originalList.get(i));
-        }
-        System.out.println(rotatedList);
+        List<Integer> rotatedList = new ArrayList<>(Arrays.asList(indicesArr));
+        System.out.println(originalList +  " rotate by: " + rotationIndex % originalList.size() + " rotated: " + rotatedList);
         return rotatedList;
     }
 
-    private static void addEdgesWithRotation(int fromNode, int start, int end, Set<String> edges, List<Integer> indices) {
-        indices = rotate(indices);
+    private static void addEdgesWithRotation(int fromNode, int start, int end, Set<String> edges, List<Integer> indices, int rotationIndex) {
+        //System.out.println("rotationIndex: " + rotationIndex);
+        indices = rotate(indices, rotationIndex);
         //System.out.println(indices);
         for (int i = 0; i < indices.size(); i++) {
             if (indices.get(i) == 1)
@@ -122,7 +119,6 @@ public class LongShortRotatingEdgeConstructor {
         }
         
         indices.addAll(Arrays.asList(indicesArr));
-        System.out.println("indicesArr: " + Arrays.toString(indicesArr));
         return indices;
     }
     private static String edgeKey(int node1, int node2) {

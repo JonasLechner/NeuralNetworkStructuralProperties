@@ -5,7 +5,7 @@ import PropertiesCalculators.Helper.Graph;
 
 public class InDegreeCalculator{
     public static void main(String[] args) {
-        String graphName = "Hopfield_100_10%.dgf";
+        String graphName = "RegularRotatingEdge10_20_1_60%.dgf";
         String testFolder = "testing/";
         String thesisFolderFF = "thesis/feedForward/";
         String thesisFolderHopfield = "thesis/hopfield/";

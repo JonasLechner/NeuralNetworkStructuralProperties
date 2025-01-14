@@ -9,10 +9,9 @@ import java.util.Set;
 
 public class MLPGenerator {
     public static void main(String[] args) {
-        int inputNodes = 2;
+        int inputNodes = 5;
         List<Integer> hiddenLayerSizes = new ArrayList<>();
-        hiddenLayerSizes.add(10);
-        hiddenLayerSizes.add(5);
+        hiddenLayerSizes.add(1);
         int outputNodes = 1;
         StringBuilder stringBuilder = new StringBuilder("testing/MLP_" + inputNodes + "_");
         for (Integer i : hiddenLayerSizes) {

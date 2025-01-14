@@ -8,9 +8,9 @@ import java.util.Set;
 public class BiRNNGenerator {
 
     public static void main(String[] args) {
-        int inputNodes = 300;
-        int numLayers = 2;
-        int nodesPerLayer = 128;
+        int inputNodes = 1;
+        int numLayers = 1;
+        int nodesPerLayer = 3;
         int outputNodes = 1;
 
         StringBuilder outputFile = new StringBuilder("testing/BRNN_" + inputNodes + "_");

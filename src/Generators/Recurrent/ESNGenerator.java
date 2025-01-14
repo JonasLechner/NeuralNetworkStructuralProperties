@@ -7,85 +7,52 @@ import java.util.Random;
 import java.util.Set;
 
 public class ESNGenerator {
-
     public static void main(String[] args) {
-        int numNodes = 30; // Number of neurons in the reservoir
-        int numInputNodes = 1; // Number of input nodes
-        int numOutputNodes = 1; // Number of output nodes
-        double sparsity = 0.1; // Fraction of possible connections to use
-        String outputFile = "testing/ESN_RNN_" + numInputNodes + "_" + numNodes + "_" + numOutputNodes + ".dgf";
+        int inputNodes = 10;
+        int reservoirNodes = 100;
+        int outputNodes = 1;
+        double sparsity = 0.1;
+        String outputFile = "testing/ESN_RNN_" + inputNodes + "_" + reservoirNodes + "_" + outputNodes + ".dgf";
 
         try {
-            generateESN(numInputNodes, numNodes, numOutputNodes, sparsity, outputFile);
-            System.out.println("ESN network with input and output layers generated successfully in " + outputFile);
+            generateESN(inputNodes, reservoirNodes, outputNodes, sparsity, outputFile);
+            System.out.println("ESN network generated successfully in " + outputFile);
         } catch (IOException e) {
-            System.err.println("Error generating ESN: " + e.getMessage());
+            System.err.println("Error generating ESN network: " + e.getMessage());
         }
     }
 
-    public static void generateESN(int numInputNodes, int numNodes, int numOutputNodes, double sparsity, String outputFile) throws IOException {
-        Random random = new Random();
+    public static void generateESN(int inputNodes, int reservoirNodes, int outputNodes, double reservoirConnectivity, String outputFile) throws IOException {
         Set<String> edges = new HashSet<>();
+        Random random = new Random();
 
-        // Input to reservoir connections
-        for (int i = 1; i <= numInputNodes; i++) {
-            int connections = random.nextInt(5) + 1; // Each input connects to 1-5 reservoir nodes
-            for (int j = 0; j < connections; j++) {
-                int target = random.nextInt(numNodes) + 1 + numInputNodes; // Target is in reservoir layer
-                edges.add(edgeKey(i, target));
+        // Input Layer to Reservoir
+        for (int input = 1; input <= inputNodes; input++) {
+            for (int reservoir = 1; reservoir <= reservoirNodes; reservoir++) {
+                edges.add(edgeKey("I_" + input, "R_" + reservoir));
             }
         }
 
-        // Ensure all reservoir nodes are connected to at least one other node
-        for (int i = 1 + numInputNodes; i <= numNodes + numInputNodes; i++) {
-            int target;
-            do {
-                target = random.nextInt(numNodes) + 1 + numInputNodes;
-            } while (target == i || edges.contains(edgeKey(i, target)));
-            edges.add(edgeKey(i, target));
-        }
-
-        // Add cycles to create recurrent connections in the reservoir
-        for (int i = 1 + numInputNodes; i <= numNodes + numInputNodes; i++) {
-            int target;
-            do {
-                target = random.nextInt(numNodes) + 1 + numInputNodes;
-            } while (target == i || edges.contains(edgeKey(i, target)));
-            edges.add(edgeKey(i, target));
-        }
-
-        // Add additional edges based on sparsity
-        int maxEdges = numNodes * (numNodes - 1) / 2;
-        int numEdgesToAdd = (int) (sparsity * maxEdges) - edges.size();
-
-        while (edges.size() < numEdgesToAdd + numNodes) {
-            int source = random.nextInt(numNodes) + 1 + numInputNodes;
-            int target = random.nextInt(numNodes) + 1 + numInputNodes;
-            if (source != target && !edges.contains(edgeKey(source, target))) {
-                edges.add(edgeKey(source, target));
+        // Reservoir to Reservoir
+        for (int from = 1; from <= reservoirNodes; from++) {
+            for (int to = 1; to <= reservoirNodes; to++) {
+                if (from != to && random.nextDouble() < reservoirConnectivity) { // No self-loops, sparse connectivity
+                    edges.add(edgeKey("R_" + from, "R_" + to));
+                }
             }
         }
 
-        // Reservoir to output connections
-        for (int i = 1; i <= numOutputNodes; i++) {
-            int connections = random.nextInt(5) + 1; // Each output connects from 1-5 reservoir nodes
-            for (int j = 0; j < connections; j++) {
-                int source = random.nextInt(numNodes) + 1 + numInputNodes; // Source is in reservoir layer
-                edges.add(edgeKey(source, numNodes + numInputNodes + i));
+        // Reservoir to Output Layer
+        for (int reservoir = 1; reservoir <= reservoirNodes; reservoir++) {
+            for (int output = 1; output <= outputNodes; output++) {
+                edges.add(edgeKey("R_" + reservoir, "O_" + output));
             }
         }
 
-        // Add random self-loops (10% of reservoir nodes)
-        /*int selfLoopsToAdd = (int) (0.1 * numNodes);
-        for (int i = 0; i < selfLoopsToAdd; i++) {
-            int node = random.nextInt(numNodes) + 1 + numInputNodes;
-            edges.add(edgeKey(node, node));
-        }*/
-
-        // Write to .dgf file
         try (FileWriter writer = new FileWriter("graphs/" + outputFile)) {
-            int totalNodes = numInputNodes + numNodes + numOutputNodes;
-            writer.write("c Echo State Network with input, reservoir, and output layers (no self loops)\n");
+            int totalNodes = inputNodes + reservoirNodes + outputNodes;
+            writer.write("c ESN with input, reservoir, and output layers\n");
+            writer.write("c Reservoir Connectivity: " + reservoirConnectivity + "\n");
             writer.write("p digraph " + totalNodes + " " + edges.size() + "\n");
             for (String edge : edges) {
                 writer.write(edge + "\n");
@@ -93,11 +60,7 @@ public class ESNGenerator {
         }
     }
 
-    private static String edgeKey(int node1, int node2) {
-        if (node1 < node2) {
-            return "e " + node1 + " " + node2;
-        } else {
-            return "e " + node2 + " " + node1;
-        }
+    private static String edgeKey(String node1, String node2) {
+        return "e " + node1 + " " + node2;
     }
 }

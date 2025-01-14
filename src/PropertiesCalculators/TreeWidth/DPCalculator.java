@@ -16,7 +16,7 @@ public class DPCalculator {
         System.out.println("This library is free software; you can redistribute it and/or ");
         System.out.println("modify it under the terms of the GNU Lesser General Public");
         System.out.println("License as published by the Free Software Foundation\r\n");
-        String graph = "Hopfield_100_10%.dgf";
+        String graph = "Fibonacci_20_50_5.dgf";
         String folder = "testing/";
         GraphInput in = new DgfReader("graphs/" + folder + graph);
 
