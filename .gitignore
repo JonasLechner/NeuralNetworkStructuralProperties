@@ -30,6 +30,5 @@ bin/
 
 graphs/testing
 printedGraphs/testing
-lib
 .idea
 StructuralPropertiesNN.iml
