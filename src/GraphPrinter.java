@@ -5,7 +5,7 @@ import java.io.*;
 public class GraphPrinter {
     public static void main(String[] args) {
         String folder = "testing/";
-        String graph = "RegularRotatingEdge10_20_1_60%.dgf";
+        String graph = "KolmogorovNetwork_3.dgf";
         String dgfFilePath = "graphs/" + folder + graph;
         String dotFilePath = "graph.dot";
         String outputImagePath = "printedGraphs/" + graph.substring(0, graph.length() - 3) + "png";

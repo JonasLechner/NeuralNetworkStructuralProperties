@@ -1,19 +1,18 @@
-package PropertiesCalculators;
+package PropertiesCalculators.Degree;
 
 import PropertiesCalculators.Helper.Edge;
 import PropertiesCalculators.Helper.Graph;
 
-public class InDegreeCalculator{
+public class AverageInDegreeCalculator {
     public static void main(String[] args) {
-        String graphName = "RegularRotatingEdge10_20_1_60%.dgf";
+        String graphName = "BMLP_5_2_3_1.dgf";
         String testFolder = "testing/";
         String thesisFolderFF = "thesis/feedForward/";
         String thesisFolderHopfield = "thesis/hopfield/";
         String thesisFolderRecurrent = "thesis/recurrent/";
-        String graphPath = "graphs/" + testFolder + graphName;
+        String graphPath = "graphs/" + thesisFolderFF + graphName;
         Graph graph = new Graph(graphPath);
-        int maxInDegree = -1;
-        int lastMaxNode = -1;
+        double totalDegree = 0;
 
         for (int i = 1; i <= graph.getMaxNode(); i++) {
             int inDegree = 0;
@@ -21,15 +20,10 @@ public class InDegreeCalculator{
                 if (edge.getNode2() == i)
                     ++inDegree;
             }
-            if (inDegree > maxInDegree) {
-                maxInDegree = inDegree;
-                lastMaxNode = i;
-            }
+            totalDegree += inDegree;
 
         }
 
-        System.out.println("Max inDegree of " + graphName + " = " + maxInDegree + ", at Node " + lastMaxNode);
-
-
+        System.out.println("Average inDegree of " + graphName + " = " + totalDegree/graph.getMaxNode());
     }
 }

@@ -1,9 +1,9 @@
-package PropertiesCalculators;
+package PropertiesCalculators.Degree;
 
 import PropertiesCalculators.Helper.Edge;
 import PropertiesCalculators.Helper.Graph;
 
-public class OutDegreeCalculator{
+public class MaxOutDegreeCalculator {
     public static void main(String[] args) {
         String graphName = "RegularRotatingEdge10_20_1_60%.dgf";
         String testFolder = "testing/";
