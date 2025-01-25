@@ -57,7 +57,6 @@ public class DegreeCalculator {
         String graphName = "BMLP_5_2_3_1.dgf";
         String testFolder = "testing/";
         String thesisFolderFF = "thesis/feedForward/";
-        String thesisFolderHopfield = "thesis/hopfield/";
         String thesisFolderRecurrent = "thesis/recurrent/";
         String graphPath = "graphs/" + thesisFolderFF + graphName;
         Graph graph = new Graph(graphPath);

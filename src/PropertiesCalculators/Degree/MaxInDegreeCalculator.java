@@ -10,7 +10,6 @@ public class MaxInDegreeCalculator {
         String graphName = "RegularRotatingEdge10_20_1_60%.dgf";
         String testFolder = "testing/";
         String thesisFolderFF = "thesis/feedForward/";
-        String thesisFolderHopfield = "thesis/hopfield/";
         String thesisFolderRecurrent = "thesis/recurrent/";
         String graphPath = "graphs/" + testFolder + graphName;
         Graph graph = new Graph(graphPath);
