@@ -1,4 +1,4 @@
-package Generators.Hopfield;
+package Generators.Recurrent;
 
 import java.io.FileWriter;
 import java.io.IOException;
