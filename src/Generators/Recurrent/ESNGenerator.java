@@ -8,10 +8,10 @@ import java.util.Set;
 
 public class ESNGenerator {
     public static void main(String[] args) {
-        int inputNodes = 10;
+        int inputNodes = 5;
         int reservoirNodes = 100;
         int outputNodes = 1;
-        double sparsity = 0.1;
+        double sparsity = 0.01;
         String outputFile = "testing/ESN_RNN_" + inputNodes + "_" + reservoirNodes + "_" + outputNodes + ".dgf";
 
         try {
@@ -25,28 +25,49 @@ public class ESNGenerator {
     public static void generateESN(int inputNodes, int reservoirNodes, int outputNodes, double reservoirConnectivity, String outputFile) throws IOException {
         Set<String> edges = new HashSet<>();
         Random random = new Random();
+        int startReservoir = inputNodes + 1;
+        int endReservoir = reservoirNodes + inputNodes;
+        int endOutputNodes = reservoirNodes + inputNodes + outputNodes;
 
         // Input Layer to Reservoir
         for (int input = 1; input <= inputNodes; input++) {
-            for (int reservoir = 1; reservoir <= reservoirNodes; reservoir++) {
-                edges.add(edgeKey("I_" + input, "R_" + reservoir));
+            for (int reservoir = startReservoir; reservoir <= endReservoir; reservoir++) {
+                edges.add(edgeKey(input, reservoir));
             }
         }
 
+
         // Reservoir to Reservoir
-        for (int from = 1; from <= reservoirNodes; from++) {
-            for (int to = 1; to <= reservoirNodes; to++) {
-                if (from != to && random.nextDouble() < reservoirConnectivity) { // No self-loops, sparse connectivity
-                    edges.add(edgeKey("R_" + from, "R_" + to));
+        for (int from = startReservoir; from <= endReservoir; from++) {
+            for (int to = startReservoir; to <= endReservoir; to++) {
+                if (from != to && random.nextDouble() < reservoirConnectivity) {
+                    edges.add(edgeKey(from, to));
                 }
             }
         }
 
         // Reservoir to Output Layer
-        for (int reservoir = 1; reservoir <= reservoirNodes; reservoir++) {
-            for (int output = 1; output <= outputNodes; output++) {
-                edges.add(edgeKey("R_" + reservoir, "O_" + output));
+        for (int reservoir = startReservoir; reservoir <= endReservoir; reservoir++) {
+            for (int output = endReservoir + 1 ; output <= endOutputNodes; output++) {
+                edges.add(edgeKey(reservoir, output));
             }
+        }
+
+        // Output to Reservoir Layer
+        for (int reservoir = startReservoir; reservoir <= endReservoir; reservoir++) {
+            for (int output = endReservoir + 1 ; output <= endOutputNodes; output++) {
+                if (random.nextDouble() < reservoirConnectivity)
+                    edges.add(edgeKey(output, reservoir));
+            }
+        }
+
+        // self loops
+        for (int node = startReservoir; node <= endReservoir; node++) {
+            if (random.nextDouble() < reservoirConnectivity) {
+                edges.add(edgeKey(node, node));
+                System.out.println("self loop added for node: " + node);
+            }
+
         }
 
         try (FileWriter writer = new FileWriter("graphs/" + outputFile)) {
@@ -60,7 +81,7 @@ public class ESNGenerator {
         }
     }
 
-    private static String edgeKey(String node1, String node2) {
+    private static String edgeKey(int node1, int node2) {
         return "e " + node1 + " " + node2;
     }
 }
