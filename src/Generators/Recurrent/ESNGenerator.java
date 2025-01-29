@@ -56,8 +56,11 @@ public class ESNGenerator {
         // Output to Reservoir Layer
         for (int reservoir = startReservoir; reservoir <= endReservoir; reservoir++) {
             for (int output = endReservoir + 1 ; output <= endOutputNodes; output++) {
-                if (random.nextDouble() < reservoirConnectivity)
+                if (random.nextDouble() < reservoirConnectivity) {
                     edges.add(edgeKey(output, reservoir));
+                    System.out.println("connection from " + output + " to " + reservoir);
+
+                }
             }
         }
 

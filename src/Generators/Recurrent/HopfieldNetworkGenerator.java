@@ -7,7 +7,6 @@ import java.util.Random;
 import java.util.Set;
 
 public class HopfieldNetworkGenerator {
-
     public static void main(String[] args) {
         int numNeurons = 100;
         double connectionProbability = 0.1;
